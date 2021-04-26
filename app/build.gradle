@@ -1,6 +1,9 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
@@ -13,6 +16,10 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        resValue "string", "access_key", properties.getProperty("access_key", "")
+        resValue "string", "secret_key", properties.getProperty("secret_key", "")
+        resValue "string", "bucket_name", properties.getProperty("bucket_name", "")
     }
 
     buildTypes {
@@ -34,4 +41,5 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation 'com.amazonaws:aws-android-sdk-s3:2.7.+'
 }

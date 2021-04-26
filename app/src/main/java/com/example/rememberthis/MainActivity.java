@@ -6,10 +6,24 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.VideoView;
+
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
+import com.amazonaws.services.s3.AmazonS3Client;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -47,7 +61,61 @@ public class MainActivity extends AppCompatActivity {
             Uri videoUri = intent.getData();
             VideoView videoView =  findViewById(R.id.videoView);
             videoView.setVideoURI(videoUri);
+            try {
+                InputStream inputStream =  getContentResolver().openInputStream(videoUri);
+                uploadWithTransferUtility(inputStream);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+    }
+
+
+    public void uploadWithTransferUtility(InputStream video) throws IOException {
+
+        byte[] buffer = new byte[video.available()];
+        video.read(buffer);
+
+        final File tempFile = File.createTempFile("video-", ".mp4", getApplicationContext().getCacheDir());
+        OutputStream outStream = new FileOutputStream(tempFile);
+        outStream.write(buffer);
+
+        String access_key = getString(R.string.access_key);
+        String secret_key = getString(R.string.secret_key);
+        String bucket_name = getString(R.string.bucket_name);
+
+        AmazonS3Client s3Client = new AmazonS3Client(
+                new BasicAWSCredentials(access_key, secret_key)
+        );
+        TransferUtility transferUtility = TransferUtility.builder().s3Client(s3Client).context(getApplicationContext()).build();
+
+        final TransferObserver observer = transferUtility.upload(bucket_name, tempFile.getName(), tempFile);
+
+        // Attach a listener to the observer to get state update and progress notifications
+        observer.setTransferListener(new TransferListener() {
+
+            @Override
+            public void onStateChanged(int id, TransferState state) {
+                if (TransferState.COMPLETED == state) {
+                    Log.d("YourActivity", "Bytes Total: " + observer.getBytesTotal());
+                }
+            }
+
+            @Override
+            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                float percentDonef = ((float) bytesCurrent / (float) bytesTotal) * 100;
+                int percentDone = (int)percentDonef;
+
+                Log.d("YourActivity", "ID:" + id + " bytesCurrent: " + bytesCurrent
+                        + " bytesTotal: " + bytesTotal + " " + percentDone + "%");
+            }
+
+            @Override
+            public void onError(int id, Exception ex) {
+                tempFile.delete();
+            }
+
+        });
     }
 
 
