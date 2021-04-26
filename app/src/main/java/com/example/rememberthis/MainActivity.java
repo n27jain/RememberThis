@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.VideoView;
 
 public class MainActivity extends AppCompatActivity {
@@ -23,7 +24,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button recordButton =  findViewById(R.id.recordButton);
+        ImageButton recordButton =  findViewById(R.id.recordButton);
+        ImageButton generateButton =  findViewById(R.id.recordButton);
+        ImageButton historyButton =  findViewById(R.id.historyButton);
+
         recordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
