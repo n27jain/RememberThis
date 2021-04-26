@@ -8,9 +8,9 @@
 
     <ImageView
         android:id="@+id/headImage"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
+        android:layout_margin="10dp"
         android:src="@drawable/logo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -38,7 +38,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/headImage"
 
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="30dp"
         app:srcCompat="@drawable/recording" />
 
     <ImageButton
@@ -47,12 +47,9 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/headImage"
         android:layout_centerHorizontal="true"
-
         android:background="@null"
         app:layout_constraintBottom_toTopOf="@+id/historyButton"
         app:layout_constraintEnd_toEndOf="parent"
-
-        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/recordButton"
         app:srcCompat="@drawable/pen" />

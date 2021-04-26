@@ -59,6 +59,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getInstanceID(){
+
+//        FirebaseInstanceId.getInstance().instanceId
+//                .addOnCompleteListener(OnCompleteListener { task ->
+//                progressbar.visibility = View.INVISIBLE
+//
+//            if (!task.isSuccessful) {
+//                textViewToken.text = task.exception?.message
+//                return@OnCompleteListener
+//            }
+//
+//            val token = task.result?.token
+//
+//            textViewMessage.text = "Your FCM Token is:"
+//            textViewToken.text = token
+//
+//        });
 //        try {
 //            InstanceID instanceID = InstanceID.getInstance(this);
 //
