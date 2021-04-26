@@ -1,23 +1,32 @@
 package com.example.rememberthis;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast;
 import android.widget.VideoView;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.inappmessaging.FirebaseInAppMessaging;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.RemoteMessage;
 
 public class MainActivity extends AppCompatActivity {
 
+
+
+
     static final int REQUEST_VIDEO_CAPTURE = 1;
-
-
-
-
+    String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
                 dispatchTakeVideoIntent();
             }
         });
+
+        getInstanceID();
 
     }
 
@@ -60,35 +71,25 @@ public class MainActivity extends AppCompatActivity {
 
     public void getInstanceID(){
 
-//        FirebaseInstanceId.getInstance().instanceId
-//                .addOnCompleteListener(OnCompleteListener { task ->
-//                progressbar.visibility = View.INVISIBLE
-//
-//            if (!task.isSuccessful) {
-//                textViewToken.text = task.exception?.message
-//                return@OnCompleteListener
-//            }
-//
-//            val token = task.result?.token
-//
-//            textViewMessage.text = "Your FCM Token is:"
-//            textViewToken.text = token
-//
-//        });
-//        try {
-//            InstanceID instanceID = InstanceID.getInstance(this);
-//
-//            String token = instanceID.getToken(getString(R.string.gcm_defaultSenderId),
-//                    GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
-//
-//            Log.i(TAG, "GCM Registration Token: " + token);
-//
-//        }catch (Exception e) {
-//            Log.d(TAG, "Failed to complete token refresh", e);
-//        }
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+                            return;
+                        }
 
+                        // Get new FCM registration token
+                        String token = task.getResult();
+
+                        Log.d("TOKEN", token);
+                        Toast.makeText(MainActivity.this, token, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+
+        // [END log_reg_token]
     }
-
-
 
 }
