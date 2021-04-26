@@ -37,7 +37,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/headImage"
-        android:layout_marginTop="50dp"
+
+        android:layout_marginTop="60dp"
         app:srcCompat="@drawable/recording" />
 
     <ImageButton
@@ -46,11 +47,14 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/headImage"
         android:layout_centerHorizontal="true"
+
         android:background="@null"
+        app:layout_constraintBottom_toTopOf="@+id/historyButton"
         app:layout_constraintEnd_toEndOf="parent"
+
+        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/recordButton"
-        android:layout_marginTop="50dp"
         app:srcCompat="@drawable/pen" />
 
     <ImageButton
@@ -59,11 +63,12 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/headImage"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="60dp"
         android:background="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/generateButton"
-        android:layout_marginTop="50dp"
         app:srcCompat="@drawable/history" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
