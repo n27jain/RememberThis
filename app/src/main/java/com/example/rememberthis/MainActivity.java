@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         byte[] buffer = new byte[video.available()];
         video.read(buffer);
 
-        File tempFile = File.createTempFile("test", ".mp4", getApplicationContext().getCacheDir());
+        final File tempFile = File.createTempFile("video-", ".mp4", getApplicationContext().getCacheDir());
         OutputStream outStream = new FileOutputStream(tempFile);
         outStream.write(buffer);
 
@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onError(int id, Exception ex) {
-                // Handle errors
+                tempFile.delete();
             }
 
         });
