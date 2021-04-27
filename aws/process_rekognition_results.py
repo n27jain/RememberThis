@@ -6,6 +6,7 @@ import os
 
 rekognition = boto3.client('rekognition')
 s3 = boto3.client('s3')
+sns = boto3.client('sns')
 prefix = '/mnt/files/'
 
 
@@ -54,18 +55,24 @@ def lambda_handler(event, context):
             print('Determined segments to clip')
 
             directory = key.split('.')[0] + '/'
+            location = s3.get_bucket_location(Bucket=bucket)['LocationConstraint']
+            message = 'You have new clips waiting at'
             for i in range(len(segments_to_save)):
                 start = segments_to_save[i][0] / 1000
                 end = segments_to_save[i][1] / 1000
                 filename = 'tempvideo' + str(i) + '.mp4'
                 ffmpeg_extract_subclip(prefix + key, start, end, prefix + filename)
                 print('Uploading clip ' + str(i+1))
-                s3.upload_file(prefix + filename, 'remember-this-clips', directory + str(i+1) + '.mp4')
+                s3.upload_file(prefix + filename, 'remember-this-clips', directory + str(i+1) + '.mp4', ExtraArgs={'ACL': 'public-read'})
+                message += "\nhttps://%s.s3-%s.amazonaws.com/%s" % ('remember-this-clips', location, directory + str(i+1) + '.mp4')
                 print('Finished uploading clip ' + str(i+1))
                 os.remove(prefix + filename)
 
             print('Deleting ' + prefix + key)
             os.remove(prefix + key)
+
+            print('Sending message')
+            sns.publish(PhoneNumber='+<your-number-here>', Message=message)
 
     except Exception as e:
         print(e)
