@@ -6,10 +6,13 @@ from pydub.silence import split_on_silence
 
 listOfWords = []
 r = sr.Recognizer()
-def get_large_audio_transcription(path):
+lengthOfEntireClip = 0
 
+def get_large_audio_transcription(path):
+    global lengthOfEntireClip 
     # open the audio file using pydub
-    sound = AudioSegment.from_wav(path)  
+    sound = AudioSegment.from_wav(path) 
+    lengthOfEntireClip = sound.duration_seconds
     # split audio sound where silence is 700 miliseconds or more and get chunks
     chunks = split_on_silence(sound,
         # experiment with this value for your target audio file
@@ -38,13 +41,14 @@ def get_large_audio_transcription(path):
             try:
                 text = r.recognize_google(audio_listened)
             except sr.UnknownValueError as e:
-                print("Error:", str(e))
+                unhandle = 0 # TODO: unhandled exception
+                # print("Error:", str(e))
             else:
                 
                 text = f"{text.capitalize()}. "
                 if("idea" in text):
-                    print("idea was found!!!")
-                    timestamps.append(time)
+                    # print("idea was found!!!")
+                    timestamps.append([time, audio_chunk.duration_seconds])
                 
                 # print(chunk_filename, ":", text)
                 listOfWords.append(text);
@@ -61,5 +65,38 @@ def get_large_audio_transcription(path):
 
 
 
+timestamps = get_large_audio_transcription("test-3.wav")
+print("oldtimestamps", timestamps)
+if (timestamps):
+    out = []
 
-print(get_large_audio_transcription("Eastern Ave.wav"))
+    prev = 0
+    old_time_stamp = [0,0]
+    for timestamp in timestamps:
+        s =  timestamp[0]
+        f =  min(s+20,lengthOfEntireClip) 
+        print("s,f", s,f)
+        if prev == 0: # first element add to list
+            old_time_stamp[0] = s
+            old_time_stamp[1] = f
+            prev = f
+        elif prev != 0 and prev >= s : # if the previous ts has an f that is greater
+            old_time_stamp[1] = f
+            prev = f
+        else:
+            #export the old
+            out.append(old_time_stamp)
+            old_time_stamp = [0,0]
+        prev = f
+    if old_time_stamp[1]!= 0:
+        out.append(old_time_stamp)
+    
+    print(out)
+
+
+
+
+
+
+
+
