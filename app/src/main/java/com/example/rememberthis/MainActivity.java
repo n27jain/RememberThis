@@ -84,12 +84,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void uploadWithTransferUtility(InputStream video) throws IOException {
 
-        byte[] buffer = new byte[video.available()];
-        video.read(buffer);
-
         final File tempFile = File.createTempFile("video-", ".mp4", getApplicationContext().getCacheDir());
         OutputStream outStream = new FileOutputStream(tempFile);
-        outStream.write(buffer);
+        byte[] buffer = new byte[8192];
+        int length;
+        while ((length = video.read(buffer)) > 0) {
+            outStream.write(buffer, 0 ,length);
+        }
 
         String access_key = getString(R.string.access_key);
         String secret_key = getString(R.string.secret_key);
