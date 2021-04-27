@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -36,7 +38,10 @@ import java.io.OutputStream;
 
 public class MainActivity extends AppCompatActivity {
 
-
+    private ProgressBar progressBar;
+    private ImageButton recordButton;
+    private ImageButton historyButton ;
+    private TextView progressText;
 
 
     static final int REQUEST_VIDEO_CAPTURE = 1;
@@ -47,10 +52,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ImageButton recordButton =  findViewById(R.id.recordButton);
-        ImageButton generateButton =  findViewById(R.id.recordButton);
-        ImageButton historyButton =  findViewById(R.id.historyButton);
-
+        recordButton =  findViewById(R.id.recordButton);
+        historyButton =  findViewById(R.id.historyButton);
+        progressBar = findViewById(R.id.progressBar);
+        progressText = findViewById(R.id.progressText);
         recordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -84,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void uploadWithTransferUtility(InputStream video) throws IOException {
 
+
         final File tempFile = File.createTempFile("video-", ".mp4", getApplicationContext().getCacheDir());
         OutputStream outStream = new FileOutputStream(tempFile);
         byte[] buffer = new byte[8192];
@@ -110,14 +116,23 @@ public class MainActivity extends AppCompatActivity {
             public void onStateChanged(int id, TransferState state) {
                 if (TransferState.COMPLETED == state) {
                     Log.d("YourActivity", "Bytes Total: " + observer.getBytesTotal());
+                    progressBar.setVisibility(View.GONE);
+                    progressText.setVisibility(View.GONE);
+                    recordButton.setVisibility(View.VISIBLE);
+
                 }
             }
 
             @Override
             public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                progressBar.setVisibility(View.VISIBLE);
+                progressText.setVisibility(View.VISIBLE);
+                recordButton.setVisibility(View.INVISIBLE);
+
                 float percentDonef = ((float) bytesCurrent / (float) bytesTotal) * 100;
                 int percentDone = (int)percentDonef;
-
+                progressBar.setProgress(percentDone);
+                progressText.setText("Progress:    " + percentDone+ " %");
                 Log.d("YourActivity", "ID:" + id + " bytesCurrent: " + bytesCurrent
                         + " bytesTotal: " + bytesTotal + " " + percentDone + "%");
             }
